@@ -11,5 +11,5 @@ class Person extends Model
 
     protected $casts = [];
 
-    protected $fillable = ['lastname', 'firstname'];
+    protected $fillable = ['lastname', 'firstname', 'email', 'phone'];
 }
