@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use App\Models\Civility;
+use App\Models\Departement;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Person extends Model
 {
@@ -12,4 +15,19 @@ class Person extends Model
     protected $casts = [];
 
     protected $fillable = ['lastname', 'firstname', 'email', 'phone'];
+
+    public function civility()
+    {
+        return $this->belongsTo(Civility::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function departements()
+    {
+        return $this->belongsToMany(Departement::class);
+    }
 }

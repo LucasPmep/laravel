@@ -21,6 +21,7 @@ class PersonFactory extends Factory
             'firstname' => $this->faker->firstName(),
             'email' => $this->faker->email(),
             'phone' => $this->faker->phoneNumber(),
+            'company_id' => rand(1, 15),
         ];
     }
 }
