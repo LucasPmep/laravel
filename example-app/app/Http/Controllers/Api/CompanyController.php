@@ -23,7 +23,19 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'postalcode' => 'required',
+            'city' => 'required',
+            'CA' => 'required',
+        ]);
+
+        Company::create([
+            'name' => $request->name,
+            'postalcode' => $request->postalcode,
+            'city' => $request->city,
+            'CA' => $request->CA,
+        ]);
     }
 
     /**
