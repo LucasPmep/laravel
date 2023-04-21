@@ -14,7 +14,8 @@ class PersonController extends Controller
      */
     public function index()
     {
-        return PersonResource::collection(Person::all());
+        // return PersonResource::collection(Person::all());
+        return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->get());
     }
 
     /**
