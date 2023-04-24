@@ -43,7 +43,12 @@ class PersonController extends Controller
      */
     public function show(Person $person)
     {
-        //
+        return PersonResource::make($person->with('company')->first());
+
+        // return PersonResource::make($person::with(['company', 'civility', 'departements'])->get());
+        // return PersonResource::make($person)->with(['company', 'civility', 'departements']);
+        // return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->get());
+        // ->where('id', $person)
     }
 
     /**
@@ -51,7 +56,13 @@ class PersonController extends Controller
      */
     public function update(Request $request, Person $person)
     {
-        //
+        $request->validate([
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'email' => 'required',
+            'phone' => 'required',
+        ]);
+        $person->update($request->only(['firstname', 'lastname', 'email', 'phone']));
     }
 
     /**
