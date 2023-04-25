@@ -22,9 +22,11 @@ class PersonResource extends JsonResource
             'firstname' => $this->firstname,
             'email' => $this->email,
             'phone' => $this->phone,
+            'civility_id' => $this->civility_id,
+            'company_id' => $this->company_id,
             'company' => CompanyResource::make($this->whenLoaded('company')),
-            'civility' => CompanyResource::make($this->whenLoaded('civility')),
-            'departements' => CompanyResource::collection($this->whenLoaded('departements')),
+            'civility' => CivilityResource::make($this->whenLoaded('civility')),
+            'departements' => DepartementResource::collection($this->whenLoaded('departements')),
         ];
     }
 }
