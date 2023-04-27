@@ -8,6 +8,7 @@ use App\Models\Civility;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PersonResource;
+use App\Models\Departement;
 
 class PersonController extends Controller
 {
@@ -28,16 +29,17 @@ class PersonController extends Controller
         $request->validate([
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required',
-            'phone' => 'required',
+            'civility_id' => 'required',
         ]);
+        $civility = Civility::findOrFail($request->civility_id);
 
-        Person::create([
+        $person = Person::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
-            'email' => $request->email,
-            'phone' => $request->phone,
         ]);
+        
+        $person->civility()->associate($civility);
+        $person->save();
     }
 
     /**
@@ -46,11 +48,6 @@ class PersonController extends Controller
     public function show(Person $person)
     {
         return PersonResource::make($person->with(['company', 'civility', 'departements'])->where('id', '=', $person->id)->first());
-
-        // return PersonResource::make($person::with(['company', 'civility', 'departements'])->get());
-        // return PersonResource::make($person)->with(['company', 'civility', 'departements']);
-        // return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->get());
-        // ->where('id', $person)
     }
 
     /**
@@ -61,18 +58,24 @@ class PersonController extends Controller
         $request->validate([
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required',
-            'phone' => 'required',
+            'civility_id' => 'required',
         ]);
 
-        $civility = Civility::findOrFail($request->civility_id);
-        $person->civility()->associate($civility);
-        $person->save(); // if we are in a many to many relationship, we can use the saveMany() function
+        $civility = Civility::find($request->civility_id);
+        if ($civility !== null) {
+            $person->civility()->associate($civility);  
+        } 
 
-        $company = Company::findOrFail($request->company_id);
-        $person->company()->associate($company);
-        $person->save(); // if we are in a many to many relationship, we can use the saveMany() function
-        
+        $company = Company::find($request->company_id);
+        if ($company !== null) {
+            $person->company()->associate($company);
+        }
+
+        $person->departements()->sync($request->departements);
+
+
+        $person->save();
+
         // we update all the classics values
         $person->update($request->only(['firstname', 'lastname', 'email', 'phone']));
     }
@@ -82,6 +85,6 @@ class PersonController extends Controller
      */
     public function destroy(Person $person)
     {
-        //
+        $person->delete();
     }
 }

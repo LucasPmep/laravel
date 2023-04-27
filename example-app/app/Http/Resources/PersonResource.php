@@ -24,8 +24,8 @@ class PersonResource extends JsonResource
             'phone' => $this->phone,
             'civility_id' => $this->civility_id,
             'company_id' => $this->company_id,
-            'company' => CompanyResource::make($this->whenLoaded('company')),
-            'civility' => CivilityResource::make($this->whenLoaded('civility')),
+            'company' => CompanyResource::make($this->whenLoaded('company')) ?? '',
+            'civility' => CivilityResource::make($this->whenLoaded('civility')) ?? '',
             'departements' => DepartementResource::collection($this->whenLoaded('departements')),
         ];
     }
