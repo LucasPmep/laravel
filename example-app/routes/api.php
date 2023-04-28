@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CivilityController;
 use App\Http\Controllers\Api\DepartementController;
+use App\Http\Controllers\Api\ActivitysectorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,7 @@ use App\Http\Controllers\Api\DepartementController;
 Route::apiResource('persons', PersonController::class);
 Route::apiResource('companies', CompanyController::class);
 Route::apiResource('departements', DepartementController::class);
+Route::apiResource('activitysectors', ActivitysectorController::class);
 Route::apiResource('civilities', CivilityController::class);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

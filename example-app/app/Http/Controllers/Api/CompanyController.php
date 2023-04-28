@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Person;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -24,17 +25,15 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'postalcode' => 'required',
-            'city' => 'required',
-            'CA' => 'required',
+            'name' => 'required|max:255',
+            'postalcode' => 'required|min_digits:4|max_digits:6',
+            'city' => 'required|max:255',
         ]);
 
         Company::create([
             'name' => $request->name,
             'postalcode' => $request->postalcode,
             'city' => $request->city,
-            'CA' => $request->CA,
         ]);
     }
 
@@ -43,7 +42,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        //
+        return CompanyResource::make($company->with(['people', 'activitysectors'])->where('id', '=', $company->id)->first());
     }
 
     /**
@@ -51,7 +50,32 @@ class CompanyController extends Controller
      */
     public function update(Request $request, Company $company)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255',
+            'postalcode' => 'required|min_digits:4|max_digits:6',
+            'city' => 'required|max:255',
+            'CA' => 'nullable|numeric'
+        ]);
+        
+
+        $company->people()->update(['company_id' => null]);
+
+        if ($request->people) {
+            $people = array_unique($request->people);
+            
+            foreach ($people as $person) {   
+                $addingPerson = Person::find($person);
+                $company->people()->save($addingPerson); 
+            }
+        }
+
+        // $company->people()->update(['company_id' => $request->id]);
+        // dont know why this doesnt work
+
+        $company->activitysectors()->sync($request->activitysectors);
+        $company->save();
+
+        $company->update($request->only(['name', 'postalcode', 'city', 'CA']));
     }
 
     /**
@@ -59,6 +83,6 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        //
+        $company->delete();
     }
 }
