@@ -18,7 +18,7 @@ class PersonController extends Controller
     public function index()
     {
         // return PersonResource::collection(Person::all());
-        return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->get());
+        return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->paginate(6));
     }
 
     /**
@@ -60,7 +60,7 @@ class PersonController extends Controller
             'lastname' => 'required|max:255',
             'civility_id' => 'required',
             'email' => 'nullable|email:rfc,dns',
-            'phone' => 'nullable|min_digits:10|numeric'
+            // 'phone' => 'nullable|min_digits:10|numeric'
         ]);
 
         $civility = Civility::find($request->civility_id);

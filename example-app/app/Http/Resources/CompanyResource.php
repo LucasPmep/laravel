@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\PersonResource;
+use App\Http\Resources\ActivitysectorResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CompanyResource extends JsonResource
@@ -25,7 +26,7 @@ class CompanyResource extends JsonResource
             'CA' => $this->CA,
 
             'people' => PersonResource::collection($this->whenLoaded('people')),
-            'activitysectors' => PersonResource::collection($this->whenLoaded('activitysectors')),
+            'activitysectors' => ActivitysectorResource::collection($this->whenLoaded('activitysectors')),
         ];
     }
 }
