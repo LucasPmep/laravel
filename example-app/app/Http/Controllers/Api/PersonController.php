@@ -6,9 +6,13 @@ use App\Models\Person;
 use App\Models\Company;
 use App\Models\Civility;
 use Illuminate\Http\Request;
+use App\Pipes\IncrementFilter;
+use Illuminate\Pipeline\Pipeline;
 use App\Http\Controllers\Controller;
+use App\Pipes\People\CivilityFilter;
+use App\Pipes\People\PaginateFilter;
 use App\Http\Resources\PersonResource;
-use App\Models\Departement;
+use App\Pipes\People\DepartementsFilter;
 
 class PersonController extends Controller
 {
@@ -18,7 +22,20 @@ class PersonController extends Controller
     public function index()
     {
         // return PersonResource::collection(Person::all());
-        return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->paginate(6));
+        // return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->paginate(6));
+
+        $persons = app(Pipeline::class)
+        ->send(Person::query()->with(['company', 'civility', 'departements']))
+        // ->send(PersonResource::collection((Person::with(['company', 'civility', 'departements']))))
+        // je suis censé paginer APRES avoir filtré, donc la ligne précédente pose problème (on devrait logiquement utiliser un get, mais comment repaginer après?)
+        ->through([
+            DepartementsFilter::class,
+            CivilityFilter::class,
+            // PaginateFilter::class
+        ])
+        ->thenReturn()
+        ->paginate(4);
+        return $persons;
     }
 
     /**
