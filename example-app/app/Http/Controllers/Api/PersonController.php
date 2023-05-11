@@ -34,6 +34,7 @@ class PersonController extends Controller
             // PaginateFilter::class
         ])
         ->thenReturn()
+        ->select('people.id', 'lastname', 'firstname', 'civility_id', 'company_id')
         ->paginate(4);
         return $persons;
     }
