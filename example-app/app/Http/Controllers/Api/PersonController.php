@@ -7,10 +7,10 @@ use App\Models\Company;
 use App\Models\Civility;
 use Illuminate\Http\Request;
 use App\Pipes\IncrementFilter;
+use App\Pipes\People\QueryFilter;
 use Illuminate\Pipeline\Pipeline;
 use App\Http\Controllers\Controller;
 use App\Pipes\People\CivilityFilter;
-use App\Pipes\People\PaginateFilter;
 use App\Http\Resources\PersonResource;
 use App\Pipes\People\DepartementsFilter;
 
@@ -24,14 +24,16 @@ class PersonController extends Controller
         // return PersonResource::collection(Person::all());
         // return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->paginate(6));
 
+        if (request()->has('fullget') && request('fullget') != null) {
+            return PersonResource::collection(Person::with(['company', 'civility', 'departements'])->get());
+        }
+
         $persons = app(Pipeline::class)
         ->send(Person::query()->with(['company', 'civility', 'departements']))
-        // ->send(PersonResource::collection((Person::with(['company', 'civility', 'departements']))))
-        // je suis censé paginer APRES avoir filtré, donc la ligne précédente pose problème (on devrait logiquement utiliser un get, mais comment repaginer après?)
         ->through([
             DepartementsFilter::class,
+            QueryFilter::class,
             CivilityFilter::class,
-            // PaginateFilter::class
         ])
         ->thenReturn()
         ->select('people.id', 'lastname', 'firstname', 'civility_id', 'company_id')

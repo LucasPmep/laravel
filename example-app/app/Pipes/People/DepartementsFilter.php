@@ -13,9 +13,8 @@ class DepartementsFilter
             if (request('dep') != null) {
                 $departements = explode(',', request('dep'));
                 $query->join('departement_person', function ($join) {
-                    $join->on('people.id', '=', 'departement_person.person_id')
-                    ->groupBy('people.id');
-                })->whereIn('departement_person.departement_id', $departements)->distinct();
+                    $join->on('people.id', '=', 'departement_person.person_id');
+                })->whereIn('departement_person.departement_id', $departements)->distinct(['people.id']);
                 
             }
         });

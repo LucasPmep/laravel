@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\Person;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use App\Pipes\Companies\QueryFilter;
+use Illuminate\Pipeline\Pipeline;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CompanyResource;
+use App\Pipes\Companies\ActivitySectorsFilter;
 
 class CompanyController extends Controller
 {
@@ -15,8 +18,22 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        // return CompanyResource::collection(Company::all());
-        return CompanyResource::collection(Company::with(['people', 'activitysectors'])->get());
+        // return CompanyResource::collection(Company::with(['people', 'activitysectors'])->get());
+
+        if (request()->has('fullget') && request('fullget') != null) {
+            return CompanyResource::collection(Company::with(['people', 'activitysectors'])->get());
+        }
+
+        $companies = app(Pipeline::class)
+        ->send(Company::query()->with(['people', 'activitysectors']))
+        ->through([
+            QueryFilter::class,
+            ActivitySectorsFilter::class,
+        ])
+        ->thenReturn()
+        ->select('companies.id', 'name', 'postalcode', 'city', 'CA')
+        ->paginate(4);
+        return $companies;
     }
 
     /**
